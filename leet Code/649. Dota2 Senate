@@ -1,0 +1,29 @@
+/**
+ * @param {string} senate
+ * @return {string}
+ */
+var predictPartyVictory = function(senate) {
+    let R=[],D=[]
+    let n =senate.length
+    for(let i=0;i<n;i++){
+        if(senate[i]==='R'){
+            R.push(i)
+        }else(
+            D.push(i)
+        )
+    }
+    while(R.length>0 && D.length>0){
+      if(R[0]<D[0]){
+            R.push(D[0]+n)
+      }else{
+           D.push(R[0]+n)
+      }
+
+        R.shift()
+        D.shift()
+
+    }
+
+    return (R.length>0)?'Radiant':'Dire'
+
+};
