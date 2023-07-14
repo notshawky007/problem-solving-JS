@@ -1,0 +1,6 @@
+const longestSubsequence = ( arr, difference ) => {
+    let s = {}, m = 0
+    for ( let a of arr )
+        m = Math.max( m, s[a] = ~~s[a-difference]+1 )
+    return m
+}
