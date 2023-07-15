@@ -1,0 +1,55 @@
+var maxValue = (events, k, count = 0) => {
+    events.sort(comparator);              /* Time O(N * log(N))       | Space O(1..log(N)) */
+    
+    const memo = initMemo(events, k);     /* Time O(N * K)            | Space O(N * K) */
+    
+    return search(events, k, count, memo);/* Time O((N * log(N)) * K) | Space O((N * K) + (N + K)) */
+}
+
+const comparator = ([ aStart, aEnd ], [ bStart, bEnd ]) => (aStart === bStart)
+    ? aEnd - bEnd 
+    : aStart - bStart;
+
+const initMemo = (events, k) => new Array(k + 1).fill()/* Time O(K) | Space O(K) */
+    .map(() => new Array(events.length).fill(-1));          /* Time O(N) | Space O(N) */
+
+const search = (events, count, currIndex, memo) => {
+    const isBaseCase = ((count === 0) || (currIndex === events.length));
+    if (isBaseCase) return 0;
+
+    const hasSeen = (memo[count][currIndex] !== -1);
+    if (hasSeen) return memo[count][currIndex];                                    /* Space O(N * K) */
+
+    return dfsPreOrder(currIndex, count, events, memo);/* Time O((N * log(N)) * K) | Space O((N * K) + (N + K)) */
+}
+
+const dfsPreOrder = (currIndex, count, events, memo) => {
+    const [ _start, end, value ] = events[currIndex];
+    const nextIndex =/* Time O(log(N)) */
+        binarySearch(events, end);
+
+    const left =         /* Time O((N * log(N)) * K) | Space O((N * K) + (N + K)) */
+        search(events, count, (currIndex + 1), memo);
+    const right =        /* Time O((N * log(N)) * K) | Space O((N * K) + (N + K)) */
+        (search(events, (count - 1), nextIndex, memo) + value);
+
+    return memo[count][currIndex]                    /* Space O(N * K) */
+        = Math.max(left, right);
+}
+
+const binarySearch = (events, target) => {
+    let [ left, right ] = [ 0, events.length ];
+
+    while (left < right) {/* Time O(log(N)) */
+        const mid = ((left + right) >> 1);
+        const startGuess = events[mid][0];
+
+        const isTargerGreater = (startGuess <= target);
+        if (isTargerGreater) left = mid + 1;
+
+        const isTargetLess = (target < startGuess);
+        if (isTargetLess) right = mid;
+    }
+
+    return left;
+}   
