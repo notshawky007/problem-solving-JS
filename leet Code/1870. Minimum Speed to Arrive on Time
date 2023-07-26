@@ -1,0 +1,28 @@
+/**
+ * @param {number[]} dist
+ * @param {number} hour
+ * @return {number}
+ */
+var minSpeedOnTime = function(dist, hour) {
+    const n = dist.length
+    let left = 1, right = 10**7 + 1
+
+    function timeReached(speed, n){
+        let total = 0
+        for (let i = 0; i < n - 1; i++){
+            total += Math.ceil(dist[i] / speed)
+        }
+        total += dist[n-1] / speed
+        return total
+    }
+
+    while (left < right){
+        const mid = left + Math.floor((right - left) / 2)
+        const totalTime = timeReached(mid, n)
+        if (totalTime <= hour) right = mid
+        else left = mid + 1
+    }
+
+    return left <= 10**7 ? left : -1
+    
+};
