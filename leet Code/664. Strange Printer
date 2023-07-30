@@ -1,0 +1,22 @@
+/**
+ * @param {string} s
+ * @return {number}
+ */
+var strangePrinter = function(s) {
+   if(!s) return 0;
+    const len = s.length;    
+    const state = Array.from({length:len}, () => Array.from({length:len}));
+    for(let i = 0; i < len; i++) {
+        state[i][i] = 1;
+    }
+    function helper(left, right) {
+        if(state[left][right]) return state[left][right];
+        state[left][right] = Infinity;
+        for(let k = left; k < right; k++) {
+            state[left][right] = Math.min(state[left][right], helper(left,k) + helper(k+1, right));
+        }
+        if(s[left] === s[right]) state[left][right]--;
+        return state[left][right];
+    }
+    return helper(0, len-1); 
+};
