@@ -1,0 +1,21 @@
+/**
+ * @param {number} n
+ * @param {number[][]} roads
+ * @return {number}
+ */
+var maximalNetworkRank = function (n, roads) {
+    let connected = Array(n).fill().map(o => Array(n).fill(false));
+    let cnts = Array(n).fill(0);
+
+    for (let [u, v] of roads) {
+        cnts[u]++;
+        cnts[v]++;
+        connected[u][v] = true;
+        connected[v][u] = true;  // cache if i and j directly connected
+    }
+    let res = 0;
+    for (let i = 0; i < n; i++)
+        for (let j = i + 1; j < n; j++)
+            res = Math.max(res, cnts[i] + cnts[j] - (connected[i][j] ? 1 : 0));  // loop all pairs and subtract duplicate connections
+    return res;
+};
