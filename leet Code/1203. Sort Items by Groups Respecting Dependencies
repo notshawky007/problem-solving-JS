@@ -1,0 +1,78 @@
+/**
+ * @param {number} n
+ * @param {number} m
+ * @param {number[]} group
+ * @param {number[][]} beforeItems
+ * @return {number[]}
+ */
+const initializeGraph = (n) => Array.from({ length: n }, () => []);
+const initializeGraphSet = (n) => Array.from({ length: n }, () => new Set());
+
+const sortItems = (n, m, group, beforeItems) => {
+    // Assign groups to items without a group
+    for (let i = 0; i < n; i++) {
+        if (group[i] === -1) {
+            group[i] = m++;
+        }
+    }
+
+    // Initialize graphs and indegree arrays
+    const gg = initializeGraphSet(m); // Group graph
+    const gi = initializeGraphSet(n); // Item graph
+    const indegreeGG = Array(m).fill(0);
+    const indegreeGI = Array(n).fill(0);
+
+    // Build graphs and calculate indegrees
+    for (let i = 0; i < n; i++) {
+        const to = group[i];
+        for (const x of beforeItems[i]) {
+            const from = group[x];
+            if (from !== to && !gg[from].has(to)) {
+                gg[from].add(to);
+                indegreeGG[to]++;
+            }
+            if (!gi[x].has(i)) {
+                gi[x].add(i);
+                indegreeGI[i]++;
+            }
+        }
+    }
+
+    // Perform topological sort on group graph and item graph
+    const ggOrder = topologicalSort(gg, indegreeGG);
+    const giOrder = topologicalSort(gi, indegreeGI);
+    if (ggOrder.length === 0 || giOrder.length === 0) return [];
+
+    // Group items based on their groups
+    const group2Item = initializeGraph(m);
+    for (const item of giOrder) {
+        group2Item[group[item]].push(item);
+    }
+
+    // Reorder items based on group order
+    const res = [];
+    for (const group_id of ggOrder) {
+        res.push(...group2Item[group_id]);
+    }
+    return res;
+};
+
+const topologicalSort = (g, indegree) => {
+    const res = [];
+    const q = [];
+    const len = indegree.length;
+    for (let i = 0; i < len; i++) {
+        if (indegree[i] === 0) q.push(i);
+    }
+    while (q.length) {
+        const cur = q.shift();
+        res.push(cur);
+        for (const child of g[cur]) {
+            if (--indegree[child] === 0) q.push(child);
+        }
+    }
+    for (let i = 0; i < len; i++) {
+        if (indegree[i] > 0) return []; // Not a valid topological order
+    }
+    return res;
+};
