@@ -5,31 +5,31 @@
  * @param {number} destination
  * @return {boolean}
  */
-var validPath = function(n, edges, source, destination) {
-    
-    let length = edges.length;
-    if(length == 0) return true;
-    
-    let visited = [];
-        let queue = [source];
-        while(queue.length > 0) {
-            let element = queue.shift();
-            visited[element] = true;
-            let i = 0;
-            while(i < edges.length) {
-                let index = (edges[i]).indexOf(element);
-                if(index != -1) {
-                    let secondElement = edges[i][1-index];
-                    if(secondElement == destination) {
-                            return true;
-                    } else {
-                        if(!visited[secondElement]) {
-                            queue.push(secondElement);
-                        }
-                    }   
-                }
-                i++;
-            }
+function validPath(n, edges, source, destination) {
+    let nodes = new Map(Array.from(Array(n).keys()).map(i => [i, i]))
+    const root = (i) => {
+        let r = i;
+        while (r !== nodes.get(r)) {
+            r = nodes.get(r)
         }
-        return false;
+        return r
+    }
+
+    const union = (p, q) => {
+        const i = root(p);
+        const j = root(q);
+        nodes.set(i, j)
+    }
+
+
+    const isConnected = (p, q) => {
+        const proot = root(p)
+        const qroot = root(q)
+        return proot === qroot
+    }
+    for (let i of edges) {
+        const [p, q] = i
+        union(p, q)
+    }
+    return isConnected(source, destination)
 };
