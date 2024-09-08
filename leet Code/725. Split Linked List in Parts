@@ -1,0 +1,53 @@
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val, next) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.next = (next===undefined ? null : next)
+ * }
+/**
+ * @param {ListNode} head
+ * @param {number} k
+ * @return {ListNode[]}
+ */
+var splitListToParts = function(head, k) {
+    let result = new Array(k).fill(null); // Initialize result array with nulls
+
+    // Step 1: Calculate the total length of the linked list
+    let length = 0;
+    let current = head;
+    while (current) {
+        length++;
+        current = current.next;
+    }
+
+    // Step 2: Determine the base size and the remainder
+    let size = Math.floor(length / k); // Base size of each part
+    let extra = length % k;            // Number of parts that will have one extra element
+
+    current = head;
+    for (let i = 0; i < k; i++) {
+        if (!current) {
+            result[i] = null; // If the list is smaller than k, add null for empty parts
+        } else {
+            result[i] = current; // Start a new part
+            let partSize = size + (extra > 0 ? 1 : 0); // This part's size
+            extra--;
+            
+            // Move to the end of this part
+            for (let j = 1; j < partSize; j++) {
+                if (current) {
+                    current = current.next;
+                }
+            }
+            
+            // Break the current part from the rest of the list
+            if (current) {
+                let nextPart = current.next;
+                current.next = null;
+                current = nextPart;
+            }
+        }
+    }
+
+    return result;
+};
