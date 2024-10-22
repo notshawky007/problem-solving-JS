@@ -1,0 +1,59 @@
+/**
+ * Definition for a binary tree node.
+ * function TreeNode(val, left, right) {
+ *     this.val = (val===undefined ? 0 : val)
+ *     this.left = (left===undefined ? null : left)
+ *     this.right = (right===undefined ? null : right)
+ * }
+ */
+/**
+ * @param {TreeNode} root
+ * @param {number} k
+ * @return {number}
+ */
+var kthLargestLevelSum = function(root, k) {
+
+    // Check if the root is null
+    if (!root) return -1;
+
+    // Initialize an array to store level sums
+    let levelSums = [];
+
+    // Initialize a queue for level order traversal
+    let queue = [root];
+
+    // Perform level order traversal
+    while (queue.length > 0) {
+        
+        // Get the number of nodes at the current level
+        let levelSize = queue.length;
+        
+        // Initialize the sum for the current level
+        let currentLevelSum = 0;
+
+        // Iterate over all nodes at the current level
+        for (let i = 0; i < levelSize; i++) {
+            
+            // Dequeue the front node
+            let currentNode = queue.shift();
+            
+            // Add its value to the current level sum
+            currentLevelSum += currentNode.val;
+
+            // Enqueue left child if it exists
+            if (currentNode.left) queue.push(currentNode.left);
+
+            // Enqueue right child if it exists
+            if (currentNode.right) queue.push(currentNode.right);
+        }
+
+        // Store the current level sum in the array
+        levelSums.push(currentLevelSum);
+    }
+
+    // Sort the level sums in descending order
+    levelSums.sort((a, b) => b - a);
+
+    // Return the kth largest sum if it exists, otherwise return -1
+    return levelSums[k - 1] !== undefined ? levelSums[k - 1] : -1;
+};
