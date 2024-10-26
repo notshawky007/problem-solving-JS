@@ -1,0 +1,40 @@
+/**
+ * @param {string} s
+ * @param {string} p
+ * @return {boolean}
+ */
+/*
+ * Recursive Backtracking Algorithm:
+ * This solution uses recursive backtracking to explore all possible matches between the input string and the pattern.
+ * It checks each character and decides whether to proceed with the next character or to backtrack and try a different path.
+ * The algorithm handles '.' as a wildcard and '*' as zero or more of the preceding element.
+ */
+
+var isMatch = function(s, p) {
+
+    // Helper function to perform the recursive backtracking
+    const matchHelper = (i, j) => {
+
+        // Base case: if both strings are fully matched
+        if (j === p.length) {
+            return i === s.length;
+        }
+
+        // Check if the current characters match
+        let currentMatch = (i < s.length && (s[i] === p[j] || p[j] === '.'));
+
+        // Handle '*' wildcard
+        if (j + 1 < p.length && p[j + 1] === '*') {
+
+            // Try two possibilities: skip '*' or use '*' to match current character
+            return matchHelper(i, j + 2) || (currentMatch && matchHelper(i + 1, j));
+        } else {
+
+            // Proceed to the next character if current characters match
+            return currentMatch && matchHelper(i + 1, j + 1);
+        }
+    };
+
+    // Start the recursive matching process
+    return matchHelper(0, 0);
+};
