@@ -1,0 +1,20 @@
+/**
+ * @param {number} n
+ * @param {number} x
+ * @return {number}
+ */
+var minEnd = function(n, x) {
+    let bits1 = (n - 1).toString(2).split('');
+    let bits2 = ('0'.repeat(bits1.length) + x.toString(2)).split('');
+
+    let pointer = bits2.length - 1;
+
+    while (bits1.length) {
+        if (bits2[pointer] === '0') {
+            bits2[pointer] = bits1.pop();
+        }
+        pointer--;
+    }
+
+    return parseInt(bits2.join(''), 2);
+};
