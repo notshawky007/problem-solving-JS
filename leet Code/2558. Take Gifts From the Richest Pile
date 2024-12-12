@@ -1,0 +1,16 @@
+/**
+ * @param {number[]} gifts
+ * @param {number} k
+ * @return {number}
+ */
+const pickGifts = function(gifts, k) {
+    while(k){
+        const maxNumber = Math.max(...gifts); // Get the max number of gifts from the array 
+        const maxIndex = gifts.indexOf(maxNumber); // Get the index of Max gift 
+        const updatedVal = Math.floor(Math.sqrt(maxNumber)); // Find the sqroot and floor that 
+        gifts[maxIndex] = updatedVal; // Update the value with the newValue after square root and floor 
+        k--; // Decrement every seconds after 1 time iterations 
+    }
+
+    return gifts.reduce((acc, el) => acc += el, 0) // Return sum of the gifts array 
+};
