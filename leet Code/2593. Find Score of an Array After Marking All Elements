@@ -1,0 +1,43 @@
+/**
+ * @param {number[]} nums
+ * @return {number}
+ */
+var findScore = function(nums) {
+    const set = new Set();
+    const map = new Map();
+    const pq = new MinPriorityQueue();
+    
+    for (let i = nums.length - 1; i >= 0; i--) {
+        pq.enqueue(nums[i]);
+        if (map.has(nums[i])) {
+            const val = map.get(nums[i]);
+            val.push(i);
+            map.set(nums[i], val);
+        } else {
+            map.set(nums[i], [i]);    
+        }
+        set.add(i);
+    }
+    
+    let ans = 0;
+    
+    while (pq.size()) {
+        const num = pq.dequeue().element;
+        if (map.has(num)) {
+            const arr = map.get(num);
+            const i = arr[arr.length - 1];
+            if (set.has(i)) {
+                ans += num;
+                set.delete(i);
+                set.delete(i - 1);
+                set.delete(i + 1);
+            }
+            arr.pop();
+            if (!arr.length) {
+                map.delete(num);
+            }
+        }
+    }
+    
+    return ans;
+};
