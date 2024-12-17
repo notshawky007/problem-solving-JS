@@ -1,0 +1,30 @@
+/**
+ * @param {string} s
+ * @param {number} repeatLimit
+ * @return {string}
+ */
+var repeatLimitedString = function (s, repeatLimit) {
+  const freq = {}, 
+  //https://github.com/datastructures-js/priority-queue
+  queue = new MaxPriorityQueue(), result=[];
+  for(let c of s) freq[c]=freq[c]?freq[c]+1:1;
+  for(let [k,v] of Object.entries(freq))
+    queue.enqueue({l:k, c:v}, k.charCodeAt(0)-97);
+  
+  while(!queue.isEmpty()){
+    const {element:top, priority:prior} = queue.dequeue();
+    for(let i=0; i<repeatLimit && top.c>0;i++, top.c--)
+      result.push(top.l);
+
+    if(top.c>0){
+      if(!queue.isEmpty()){
+        const f = queue.front().element;
+        result.push(f.l);
+        f.c--;
+        if(f.c===0) queue.dequeue();
+        queue.enqueue(top, prior);
+      }
+    }
+  }
+  return result.join("");
+}
