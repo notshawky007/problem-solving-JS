@@ -1,0 +1,28 @@
+/**
+ * @param {number} n
+ * @param {number[][]} edges
+ * @param {number[]} values
+ * @param {number} k
+ * @return {number}
+ */
+const initializeGraph = (n) => { let g = []; for (let i = 0; i < n; i++) { g.push([]); } return g; };
+const packUG = (g, edges) => { for (const [u, v] of edges) { g[u].push(v); g[v].push(u); } };
+
+let g, dp, vals;
+const maxKDivisibleComponents = (n, edges, values, k) => {
+    g = initializeGraph(n), dp = Array(n).fill(0), vals = values;
+    packUG(g, edges);
+    tree_dp(0, -1);
+    return dp.filter(x => x % k == 0).length;
+};
+
+const tree_dp = (cur, par) => {
+    let subTreeSum = vals[cur];
+    for (const child of g[cur]) {
+        if (child != par) {
+            tree_dp(child, cur);
+            subTreeSum += dp[child];
+        }
+    }
+    dp[cur] = subTreeSum;
+};
