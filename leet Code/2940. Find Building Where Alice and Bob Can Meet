@@ -1,0 +1,116 @@
+//#region Optimized Stack
+/**
+ * @template TItem
+ */
+class OptStack {
+  /**
+   * @type {TItem[]}
+   * @private
+   */
+  _array;
+  /**
+   * @type {number}
+   * @private
+   */
+  _size;
+
+  constructor(initialSize = 0) {
+    this._array = new Uint32Array(initialSize);
+    this.clear();
+  }
+
+  get size() {
+    return this._size;
+  }
+
+  clear() {
+    this._size = 0;
+  }
+
+  /**
+   * @param  {...TItem} items
+   */
+  push(...items) {
+    for (let i = 0; i < items.length; i++) {
+      if (this._array.length === this._size) this._array.push(items[i]);
+      else this._array[this._size] = items[i];
+      this._size++;
+    }
+  }
+
+  pop() {
+    if (this._size) return this._array[--this._size];
+    return undefined;
+  }
+
+  /**
+   * @param {number} i offset from last element. Default to 0, which is the last element itself
+   * @returns
+   */
+  getLast(i = 0) {
+    if (this._size > i) return this._array[this._size - i - 1];
+    return undefined;
+  }
+
+  /**
+   * @param {number} i offset from first element. Default to 0, which is the first element itself
+   * @returns
+   */
+  getFirst(i = 0) {
+    if (i < this._size) return this._array[i];
+    return undefined;
+  }
+}
+//#endregion
+
+let st = new OptStack(5e4);
+
+/**
+ * @param {number[]} heights
+ * @param {number[][]} queries
+ * @return {number[]}
+ */
+var leftmostBuildingQueries = function (heights, queries) {
+  let n = heights.length;
+  let t = queries.length;
+  let res = new Int32Array(t);
+
+  let indices = new Uint32Array(t);
+  for (let i = 0; i < t; ++i) {
+    indices[i] = i;
+    if (queries[i][0] > queries[i][1]) {
+      let temp = queries[i][0];
+      queries[i][0] = queries[i][1];
+      queries[i][1] = temp;
+    }
+  }
+  indices.sort((a, b) => queries[b][1] - queries[a][1]);
+
+  st.clear();
+  let cur = 0;
+  for (let i = n - 1; i >= 0; --i) {
+    while (heights[st.getLast()] <= heights[i]) st.pop();
+    st.push(i);
+
+    while (queries[indices[cur]][1] == i) {
+      let j = queries[indices[cur]][0];
+      if (i == j || heights[j] < heights[i]) res[indices[cur]] = i;
+      else {
+        if (heights[j] >= heights[st.getFirst()]) res[indices[cur]] = -1;
+        else {
+          let l = 1;
+          let r = st.size;
+
+          while (r > l) {
+            let m = (r + l) >> 1;
+            if (heights[st.getLast(m)] > heights[j]) r = m;
+            else l = m + 1;
+          }
+          res[indices[cur]] = st.getLast(r);
+        }
+      }
+
+      if (++cur == t) return res;
+    }
+  }
+};
