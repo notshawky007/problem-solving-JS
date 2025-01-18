@@ -1,0 +1,50 @@
+/**
+ * @param {number[][]} grid
+ * @return {number}
+ */
+var minCost = function(grid) {
+    const m = grid.length;
+    const n = grid[0].length;
+
+    // Directions: right, left, down, up
+    const directions = [[0, 1], [0, -1], [1, 0], [-1, 0]];
+
+    // Cost array initialized to Infinity
+    const cost = Array.from({ length: m }, () => Array(n).fill(Infinity));
+    cost[0][0] = 0;
+
+    // Priority queue for Dijkstra-like processing
+    const pq = new MinPriorityQueue({ compare: (a, b) => a[0] - b[0] });
+    pq.enqueue([0, 0, 0]); // [cost, row, col]
+
+    while (!pq.isEmpty()) {
+        const [currCost, row, col] = pq.dequeue();
+
+        // If bottom-right cell is reached, return the cost
+        if (row === m - 1 && col === n - 1) return currCost;
+
+        // Determine the "free direction" based on grid value
+        const dirIndex = grid[row][col] - 1;
+        const [dr, dc] = directions[dirIndex];
+
+        // Process all 4 possible movements
+        for (let i = 0; i < 4; i++) {
+            const nr = row + directions[i][0];
+            const nc = col + directions[i][1];
+
+            // Skip out-of-bound cells
+            if (nr < 0 || nr >= m || nc < 0 || nc >= n) continue;
+
+            // Calculate new cost
+            const newCost = (directions[i][0] === dr && directions[i][1] === dc) ? currCost : currCost + 1;
+
+            // If new cost is lower, update and enqueue
+            if (newCost < cost[nr][nc]) {
+                cost[nr][nc] = newCost;
+                pq.enqueue([newCost, nr, nc]);
+            }
+        }
+    }
+
+    return -1; // Should never reach here
+};
