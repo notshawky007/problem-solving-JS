@@ -1,0 +1,18 @@
+const eventualSafeNodes = graph => {
+    const n = graph.length;
+    const ans = [];
+    const visited = Array(n).fill(0);
+
+    const isSafe = (graph, i, visited) => {
+        if (visited[i] === 1) return false;
+        if (visited[i] === 2) return true;
+        visited[i] = 1;
+        for (let next of graph[i]) if (!isSafe(graph, next, visited)) return false;
+        visited[i] = 2;
+        return true;
+    };
+
+    graph.forEach((node, i) => (isSafe(graph, i, visited)) && ans.push(i))
+
+    return ans;
+};
